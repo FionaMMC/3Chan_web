@@ -1,0 +1,598 @@
+<!-- 
+   forum
+-->
+{% extends 'base.jinja' %}
+
+
+{% block content %}
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Neonderthaw&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Kode+Mono:wght@400..700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --border-color: #82e2ff;
+            --font-color: #82e2ff;
+        }
+        p{
+            font-family: 
+            font-weight: 400;
+            font-style: normal;
+          }
+        
+        body {
+            color: white;
+            margin: 0;
+            padding: 0;
+            background-color: #14142e;
+        }       
+        .fullscreen-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: url("{{ url_for('static', filename='js/libs/floatinf.svg') }}");
+            background-size: cover;
+            z-index: -3;
+        }
+
+        .content-container {
+            display: grid;
+            grid-template-columns:64px; 
+            grid-gap: 40px;
+            padding: 10px;
+            height: 100vh;
+        }
+        button {
+            background-color: var(--emerald-500);
+            color: var(--white);
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+    
+        button:hover {
+            background-color: var(--emerald-600);
+        }
+
+
+
+
+
+
+        .chat-sidebar {
+            grid-column: 1;
+            background-color: rgba(0, 0, 0, 0.3); 
+            backdrop-filter: blur(10px); /* Frosted glass effect */
+            border-radius: 17px; /* Rounded corners */
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Centers the content vertically */
+            box-shadow: 
+            0 0 5px rgba(130, 226, 255, 0.8), /* Light blue glow */
+            0 0 10px rgba(130, 226, 255, 0.8), /* Light blue glow */
+            0 0 15px rgba(104, 134, 254, 0.8), /* Blue with a hint of purple */
+            0 0 20px rgba(75, 0, 130, 0.8); /* Deep purple glow */
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            gap: 30px;
+            margin-top: 100px;
+        }
+        
+        .button-container button {
+            color: #82e2ff; 
+            background: transparent; 
+            font-size: 16px; 
+            border-radius: 5px; 
+            outline: none;
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s; 
+        }
+        
+        .button-container button:hover {
+            background-color: #82e2ff; /* Background color changes to light blue */
+            color: black; /* Icon color changes to black */
+            box-shadow: 0 0 8px #82e2ff, 0 0 16px #82e2ff; /* Glowing effect */
+        }
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        main {
+            grid-column: 2;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            overflow-y: auto;
+            background-color: rgba(0, 0, 0, 0.3); 
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            box-shadow: 
+            0 0 5px rgba(130, 226, 255, 0.8), /* Light blue glow */
+            0 0 10px rgba(130, 226, 255, 0.8), /* Light blue glow */
+            0 0 15px rgba(104, 134, 254, 0.8), /* Blue with a hint of purple */
+            0 0 20px rgba(75, 0, 130, 0.8); /* Deep purple glow */
+        }
+        
+
+        #message_box {
+            background-color: rgba(255, 255, 255,0.8); 
+            height: 400px; /* Adjusted for responsiveness */
+            width: 95%; /* Full width within its container */
+            overflow: auto;
+            padding: 20px;
+            border-radius: 10px; /* Rounded corners */
+        }
+        
+
+        main input, main button {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease-in-out; /* Smooth transitions for hover effects */
+        }
+
+
+        main input {
+            background-color: transparent; 
+            border: 2px solid #82e2ff; 
+            color: #82e2ff; 
+        }
+        
+        main input::placeholder {
+            color: #82e2ff; 
+        }
+        main button {
+            background-color: transparent;
+            color: #82e2ff;
+            padding: 5px 10px;
+        }
+
+        main button:hover {
+            background-color: #82e2ff;
+            color: black;
+            box-shadow: 0 0 8px #82e2ff, 0 0 16px #82e2ff;
+        }
+        main h1{
+            font-family: "Kode Mono", monospace;
+            font-weight: 400;
+            font-style: normal;
+            color: #82e2ff; /* Base color for the glow */
+            text-align: center;
+            text-shadow:
+                0 0 5px #104e8b, 
+                0 0 7px #104e8b, 
+                0 0 9px #104e8b, 
+                0 0 20px #104e8b; 
+        }
+        #categories {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        #categories button {
+            flex: 1 1 30%;
+            margin: 5px;
+            padding: 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            #categories button {
+                flex: 1 1 45%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #categories button {
+                flex: 1 1 100%;
+            }
+        }
+
+
+        #create-post {
+            align-items: center;
+            background-color: transparent;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 
+                0 0 5px rgba(130, 226, 255, 0.8),
+                0 0 10px rgba(130, 226, 255, 0.8),
+                0 0 15px rgba(104, 134, 254, 0.8),
+                0 0 20px rgba(75, 0, 130, 0.8);
+            backdrop-filter: blur(10px);
+            width: 70%;
+        }
+
+        #create-post h2 {
+            margin-bottom: 20px;
+            color: var(--font-color);
+            text-align: center;
+            text-shadow:
+                0 0 5px #104e8b,
+                0 0 7px #104e8b,
+                0 0 9px #104e8b,
+                0 0 20px #104e8b;
+            font-family: "Kode Mono", monospace;
+            font-weight: 400;
+        }
+
+        #post-form {
+            background-color: transparent;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #post-form input, 
+        #post-form select, 
+        #post-form textarea, 
+        #post-form button {
+            border: 2px solid var(--border-color);
+            background-color: transparent;
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            background-color: transparent;
+            color: var(--font-color);
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+        }
+
+        #post-form input::placeholder, 
+        #post-form textarea::placeholder {
+            color: var(--font-color);
+        }
+
+        #post-form input:focus, 
+        #post-form select:focus, 
+        #post-form textarea:focus {
+            border-color: #007BFF;
+            box-shadow: 0 0 8px #82e2ff, 0 0 16px #82e2ff;
+        }
+
+        #post-form button {
+            cursor: pointer;
+            padding: 10px 20px;
+        }
+
+        #post-form button:hover {
+            background-color: #82e2ff;
+            color: black;
+            box-shadow: 0 0 8px #82e2ff, 0 0 16px #82e2ff;
+        }
+
+        #post-message {
+            margin-top: 10px;
+            text-align: center;
+            color:#104e8b;
+        }
+
+
+
+        .titles {
+            width: 100%;
+            max-width: 800px;
+            background-color: transparent;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .titles ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .titles li {
+            margin-bottom: 10px;
+        }
+
+        .titles button {
+            width: 100%;
+            text-align: left;
+            background-color: transparent;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+            font-family: "Kode Mono", monospace;
+            font-weight: 400;
+            color: #82e2ff;
+        }
+
+        .titles button:hover {
+            background-color: #82e2ff;
+            color: black;
+            box-shadow: 0 0 8px #82e2ff, 0 0 16px #82e2ff;
+        }
+
+        .article-container {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: transparent;
+            margin-top: 10px;
+            box-shadow: 
+                0 0 5px rgba(130, 226, 255, 0.8),
+                0 0 10px rgba(130, 226, 255, 0.8),
+                0 0 15px rgba(104, 134, 254, 0.8),
+                0 0 20px rgba(75, 0, 130, 0.8);
+        }
+
+        .post-content {
+            background-color: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 10px;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .post-content div {
+            margin-bottom: 10px;
+        }
+
+        .post-content button {
+            background-color: transparent;
+            border: 2px solid #82e2ff;
+            color: #82e2ff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+        }
+
+        .post-content button:hover {
+            background-color: #82e2ff;
+            color: black;
+            box-shadow: 0 0 8px #82e2ff, 0 0 16px #82e2ff;
+        }
+
+        
+
+        
+        
+        
+
+
+
+
+    </style>
+<body>
+    <div class="fullscreen-image"></div>
+    <div class="content-container">
+        <aside class="chat-sidebar">
+
+                <div class="button-container">
+                    <button onclick = "chat()"><i class="fa fa-comments"></i></button> <!-- Chat icon -->
+                    <button><i class="fa fa-users"></i></button>     <!-- Forum icon -->
+                    <button onclick = "setting()"><i class="fa fa-cog"></i></button>       <!-- Settings icon -->
+                </div>
+        </aside> 
+
+        
+        
+
+
+
+
+        <main>
+            <h1>Knowledge Forum</h1>
+            <!-- Article Display -->
+            <div id="categories">
+                <button onclick="window.location.href='/forum?category=data_analysis'">Data Analysis</button>
+                <button onclick="window.location.href='/forum?category=software_engineering'">software engineering</button>
+                <button onclick="window.location.href='/forum?category=cyber_security'">Cyber Security</button>
+                <button onclick="window.location.href='/forum?category=computer_science'">Computer Science</button>
+                <button onclick="window.location.href='/forum?category=game_development'">Game Development</button>
+                <button onclick="window.location.href='/forum?category=general'">General</button>            
+            </div>
+            <div id="article">
+                <div class="titles">
+                    <input type="hidden" id="current-category" value="{{ category }}">
+                    {% if titles %}
+                    <ul>
+                        {% for title in titles %}
+                        {% for key, value in title.items() %}
+                        <li>
+                            <button onclick="toggleContent('{{ key }}')">{{ value }}</button>
+
+                            <div id="content-{{ key }}" class="article-container" style="display: none;">
+                                <div id="content-{{ post_id }}"></div>
+                            </div>
+
+                        </li>
+                        {% endfor %}
+                        {% endfor %}
+
+                    </ul>
+                    {% else %}
+                    <p>No post to show.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+
+            <div id="create-post">
+                <h2>Create New Post</h2>
+                <form id="post-form">
+                    <li>
+                        <input type="text" id="title" placeholder="Title" required>
+                        <select id="category" required>
+                            <option value="">Select a Category</option>
+                            <option value="data_analysis">Data Analysis</option>
+                            <option value="software_engineering">Software Engineering</option>
+                            <option value="cyber_security">Cyber Security</option>
+                            <option value="computer_science">Computer Science</option>
+                            <option value="game_development">Game Development</option>
+                            <option value="general">General</option>
+                        </select>
+                    </li>
+                    <textarea id="content" placeholder="Write your content here..." required></textarea>
+                    <button type="button" onclick="createPost()">Post</button>
+                </form>
+                <div id="post-message"></div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
+
+
+    
+
+<script src="/static/js/libs/socket.io.min.js"></script>
+
+<script>
+    function sendCategoryData(category) {
+        console.log("Sending category:", category); 
+    }
+    
+    function toggleContent(postId) {
+        const contentDiv = document.getElementById(`content-${postId}`);
+        const category = document.getElementById('current-category').value; 
+
+    
+        if (contentDiv.style.display === 'block') {
+            contentDiv.style.display = 'none';
+        } else {
+            contentDiv.style.display = 'block';
+    
+            fetch(`/get-post-content?category=${encodeURIComponent(category)}&id=${postId}`)
+                .then(response => response.text())
+                .then(html => {
+                    contentDiv.innerHTML = html;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    }
+    
+    
+    
+    
+    async function add_comment(key,category) {
+        let comment = document.getElementById(`comment-${key}`).value;
+        try {
+            let response = await axios.post("/add_comment", {
+                post_id: key,
+                category :category,
+                comment: comment
+            });
+            alert(response.data);
+        } catch (error) {
+            console.error('Error posting comment:', error);
+            alert('Failed to post comment.');
+        }
+    }
+
+    async function delete_post(key,category){
+        let response = await axios.post("/delete_post", {
+            post_id: key,
+            category :category
+        }
+        )
+        alert(response.data);
+
+
+        }
+    async function modify_post(key, category) {
+            const newcontent = document.getElementById('newContent').value;
+            try {
+                let response = await axios.post("/modify_post", {
+                    post_id: key,
+                    category: category,
+                    new_content: newcontent
+                });
+                alert(response.data.message);  
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to modify post: ' + error.message);
+            }
+        }
+    
+    async function delete_comment(category, post_id,comment_id){
+        let response = await axios.post("/delete_comment", {
+            comment_id : comment_id,
+            post_id: post_id,
+            category :category
+        }
+        )
+        alert(response.data);
+
+    }
+        
+    function modify() {
+                document.getElementById('modify').style.display = 'block';
+                document.getElementById('newContent').style.display = 'block';
+            }
+    
+    function createPost() {
+        const title = document.getElementById('title').value;
+        const category = document.getElementById('category').value;
+        const content = document.getElementById('content').value;
+
+        // Prepare data as a JSON object
+        const postData = {
+            title: title,
+            category: category,
+            content: content
+        };
+
+        fetch('/create_post', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(postData)
+        }).then(response => response.text()).then(data => {
+            document.getElementById('post-message').innerText = data;
+            if (data === "Post created successfully") {
+                // Optionally reset the form or redirect the user
+                document.getElementById('post-form').reset();
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+            document.getElementById('post-message').innerText = "Error posting your message";
+        });
+    }
+
+    async function setting() {
+        window.location.href = '/setting';
+    }
+    
+    async function chat(){
+        window.location.href = '/home?username=currentuser';
+    }
+    
+</script>
+{% endblock %}

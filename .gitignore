@@ -1,0 +1,9 @@
+database
+__pycache__
+env
+.idea
+messages
+report
+tokens
+.DS_Store
+debug.txt

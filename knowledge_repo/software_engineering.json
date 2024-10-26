@@ -1,0 +1,25 @@
+[
+    {
+        "post_id": 0,
+        "sender": "system",
+        "title": "Welcome to Software Engineering repos",
+        "content": "Hey there, Software Engineers! Welcome to your hub for coding tips, best practices, and all things software. Whether you're debugging a tricky issue or showcasing your latest project, you're in the right place. Let's build something amazing together!",
+        "time": "2024-05-12T16:06:55",
+        "comments": [
+            {
+                "comment_id": 0,
+                "sender": "1",
+                "content": "2",
+                "time": "2024-05-17T17:08:21"
+            }
+        ]
+    },
+    {
+        "post_id": 1,
+        "sender": "1",
+        "title": "test",
+        "content": "hello ,test on modify",
+        "time": "2024-05-16T22:50:52",
+        "comments": []
+    }
+]

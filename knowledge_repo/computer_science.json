@@ -1,0 +1,17 @@
+[    
+    {
+        "post_id": 0,
+        "sender": "system",
+        "title": "Welcome to Computer Science repos",
+        "content": "Hello, Computer Science enthusiasts! This is your go-to spot for theory, algorithms, and cutting-edge tech discussions. Whether you're deep into AI or just love coding, we can't wait to see what you bring to the table. Let's innovate together!",
+        "time": "2024-05-12T16:06:55",
+        "comments": [
+            {
+                "comment_id": 0,
+                "sender": "1",
+                "content": "hello",
+                "time": "2024-05-12T16:23:36"
+            }
+        ]
+    }
+]

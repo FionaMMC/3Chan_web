@@ -1,0 +1,40 @@
+[
+    {
+        "post_id": 0,
+        "sender": "system",
+        "title": "Welcome to general repos",
+        "content": "Welcome to the General category! This is our catch-all space for topics that don't fit elsewhere. From tech news to community updates, feel free to share and discuss anything that sparks your interest. We're glad to have you here!",
+        "time": "2024-05-12T16:06:55",
+        "comments": [
+            {
+                "comment_id": 0,
+                "sender": "1",
+                "content": "hello",
+                "time": "2024-05-12T16:23:36"
+            }
+        ]
+    },
+    {
+        "post_id": 1,
+        "sender": "1",
+        "title": "test on posting",
+        "content": null,
+        "time": "2024-05-14T19:36:26",
+        "comments": [
+            {
+                "comment_id": 0,
+                "sender": "1",
+                "content": "hello",
+                "time": "2024-05-14T19:37:04"
+            }
+        ]
+    },
+    {
+        "post_id": 2,
+        "sender": "1",
+        "title": "test on unban",
+        "content": "balbabla",
+        "time": "2024-05-18T21:30:22",
+        "comments": []
+    }
+]

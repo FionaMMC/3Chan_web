@@ -1,0 +1,344 @@
+<!-- setting page -->
+
+{% extends 'base.jinja' %}
+
+{% block content %}
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings Page</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Neonderthaw&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --border-color: #82e2ff;
+            --font-color: #82e2ff;
+        }
+        p {
+            font-family: 'Bebas Neue', sans-serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+        body {
+            color: white;
+            margin: 0;
+            padding: 0;
+            background-color: #14142e;
+        }
+        .fullscreen-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: url("{{ url_for('static', filename='js/libs/floatinf.svg') }}");
+            background-size: cover;
+            z-index: -3;
+        }
+        .content-container {
+            display: grid;
+            grid-template-columns: 64px 1fr;
+            grid-gap: 40px;
+            padding: 20px;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: var(--emerald-500);
+            color: var(--white);
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: var(--emerald-600);
+        }
+        .chat-sidebar {
+            grid-column: 1;
+            background-color: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 17px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 
+                0 0 5px rgba(130, 226, 255, 0.8),
+                0 0 10px rgba(130, 226, 255, 0.8),
+                0 0 15px rgba(104, 134, 254, 0.8),
+                0 0 20px rgba(75, 0, 130, 0.8);
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            margin-top: 100px;
+        }
+        .button-container button {
+            color: #82e2ff;
+            background: transparent;
+            font-size: 16px;
+            border-radius: 5px;
+            outline: none;
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+        }
+        .button-container button:hover {
+            background-color: #82e2ff;
+            color: black;
+            box-shadow: 0 0 8px #82e2ff, 0 0 16px #82e2ff;
+        }
+        main {
+            grid-column: 2;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            overflow-y: auto;
+            background-color: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            box-shadow: 
+                0 0 5px rgba(130, 226, 255, 0.8),
+                0 0 10px rgba(130, 226, 255, 0.8),
+                0 0 15px rgba(104, 134, 254, 0.8),
+                0 0 20px rgba(75, 0, 130, 0.8);
+        }
+        main h2 {
+            font-family: "Kode Mono", monospace;
+            font-weight: 400;
+            font-style: normal;
+            color: #82e2ff;
+            text-align: center;
+            text-shadow:
+                0 0 5px #104e8b,
+                0 0 7px #104e8b,
+                0 0 9px #104e8b,
+                0 0 20px #104e8b;
+        }
+        main input, main button {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease-in-out;
+        }
+        main input {
+            background-color: transparent;
+            border: 2px solid #82e2ff;
+            color: #82e2ff;
+        }
+        main input::placeholder {
+            color: #82e2ff;
+        }
+        main button {
+            background-color: transparent;
+            color: #82e2ff;
+            padding: 5px 10px;
+        }
+        main button:hover {
+            background-color: #82e2ff;
+            color: black;
+            box-shadow: 0 0 8px #82e2ff, 0 0 16px #82e2ff;
+        }
+        main label {
+            font-family: "Kode Mono", monospace;
+            font-weight: 400;
+            font-style: normal;
+            color: #82e2ff;
+            text-shadow:
+                0 0 5px #104e8b,
+                0 0 7px #104e8b,
+                0 0 9px #104e8b,
+                0 0 20px #104e8b;
+        }
+        .setting-item {
+            margin-bottom: 20px;
+        }
+        hr {
+            border: none;
+            height: 1px;
+            background-color: #82e2ff;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="fullscreen-image"></div>
+    <div class="content-container">
+        <aside class="chat-sidebar">
+            <div class="button-container">
+                <button onclick="chat()"><i class="fa fa-comments"></i></button>
+                <button onclick="forum()"><i class="fa fa-users"></i></button>
+                <button><i class="fa fa-cog"></i></button>
+            </div>
+        </aside>
+        <main>
+            <h2>User Settings</h2>
+            <div class="setting-item">
+                <label>Username:{{username}}</label>
+            </div>
+            <hr>
+            <div class="setting-item">
+                <label>Gender:</label>
+                <input type="text" id="genderInput" value="{{user_gender}}">
+                <button onclick="updateUserGender()">Modify</button>
+            </div>
+            <hr>
+            <div class="setting-item">
+                <label>User Type: {{user_type}}</label>
+                <div>
+                    <select id="userTypeSelect">
+                        <option value="student" {% if user_type == 'student' %}selected{% endif %}>Student</option>
+                        <option value="academic" {% if user_type == 'academic' %}selected{% endif %}>Academic</option>
+                        <option value="admin" {% if user_type == 'admin' %}selected{% endif %}>Admin</option>
+                    </select>
+                    <input type="text" id="adminTokenInput" placeholder = "Enter the token here...">
+                    <button onclick="updateUserType()">Modify</button>
+                    <p>Please contact the admin to get the access token if you are a staff</p>
+                </div>
+            </div>
+            <hr>
+            <div class="settings-item">
+                <label>University Major: {{user_major}}</label>
+                <div>
+                    <select id="userMajorSelect">
+                        <option value="secret" {% if user_type == 'secret' %}selected{% endif %}>secret</option>
+                        <option value="Computer Science" {% if user_type == 'Computer Science' %}selected{% endif %}>Computer Science</option>
+                        <option value="CyberSecurity" {% if user_type == 'CyberSecurity' %}selected{% endif %}>CyberSecurity</option>
+                        <option value="Data Analysis" {% if user_type == 'Data Analysis' %}selected{% endif %}>Data Analysis</option>
+                        <option value="Game Development" {% if user_type == 'Game Development' %}selected{% endif %}>Game Development</option>
+                        <option value="Software Engineering" {% if user_type == 'Software Engineering' %}selected{% endif %}>Software Engineering</option>
+                    </select>
+                    <button onclick="updateUserMajor()">Modify</button>
+                </div>
+            </div>
+            <hr>
+            {% if user_type == 'admin' %}
+            <div class="setting-item">
+                <label>Ban/Unban User:</label>
+                <input type="text" id="banUsernameInput" placeholder="Enter username">
+                <select id="banActionSelect">
+                    <option value="ban">Ban</option>
+                    <option value="unban">Unban</option>
+                </select>
+                <button onclick="banUnbanUser()">Submit</button>
+            </div>
+            {% endif %}
+            <div id="resultMessage" style="display:none;"></div>        
+        </main>
+    </div>
+</body>
+</html>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function updateUserGender() {
+            var newUserGender = document.getElementById("genderInput").value;
+            fetch('/update_user_gender', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ new_user_gender: newUserGender })
+            })
+            .then(response => response.text())
+            .then(data => {
+                var resultMessage = document.getElementById("resultMessage");
+                resultMessage.style.display = 'block';
+                resultMessage.innerText = data;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function updateUserMajor() {
+            var newUserMajor = document.getElementById("userMajorSelect").value;
+            fetch('/update_user_major', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ new_user_major: newUserMajor })
+            })
+            .then(response => response.text())
+            .then(data => {
+                var resultMessage = document.getElementById("resultMessage");
+                resultMessage.style.display = 'block';
+                resultMessage.innerText = data;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function updateUserType() {
+            var newUserType = document.getElementById("userTypeSelect").value;
+            var adminToken = document.getElementById("adminTokenInput").value;
+            fetch('/update_user_type', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    new_user_type: newUserType,
+                    admin_token: adminToken
+                })
+            })
+            .then(response => response.text())
+            .then(data => {
+                var resultMessage = document.getElementById("resultMessage");
+                resultMessage.style.display = 'block';
+                resultMessage.innerText = data;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        async function forum(){
+            window.location.href = '/forum';
+        }
+        async function chat(){
+            window.location.href = '/home?username=currentuser';
+        }
+
+
+        async function banUnbanUser() {
+            const username = document.getElementById('banUsernameInput').value;
+            const action = document.getElementById('banActionSelect').value;
+            const isBan = action === 'ban' ? true : false;
+        
+            if (!username) {
+                alert('Please enter a username.');
+                return;
+            }
+        
+            try {
+                const response = await fetch('/set_ban', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ban_username: username, is_ban: isBan })
+                });
+        
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+        
+                const data = await response.json();
+                alert(data.message);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        
+    </script>
+</body>
+</html>
+{% endblock %}

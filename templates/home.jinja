@@ -1,0 +1,1297 @@
+<!-- 
+    Here you'll find the main exhibit: the chat application code. Feel free to look around!
+-->
+{% extends 'base.jinja' %}
+
+
+{% block content %}
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Neonderthaw&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Kode+Mono:wght@400..700&display=swap" rel="stylesheet">
+    <style>
+        p{
+            font-family: "Chakra Petch", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+          }
+        p.note{
+            margin-top: 0;
+            margin-bottom: 0;
+            font-size: 12px;
+        }
+        
+        body {
+            color: white;
+            font-family: Arial, sans-serif; 
+            margin: 0;
+            padding: 0;
+            background-color: #14142e;
+        }       
+        .fullscreen-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: url("{{ url_for('static', filename='js/libs/floatinf.svg') }}");
+            background-size: cover;
+            z-index: -3;
+        }
+
+        .content-container {
+            display: grid;
+            grid-template-columns:64px 250px 1fr; 
+            grid-gap: 40px;
+            padding: 10px;
+            height: 100vh;
+        }
+        button {
+            background-color: var(--emerald-500);
+            color: var(--white);
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+    
+        button:hover {
+            background-color: var(--emerald-600);
+        }
+
+
+
+
+
+
+        .username {
+            font-weight: bold;
+            color: white; 
+            margin-top: -300px;
+            padding :25px
+            
+        }
+
+        .chat-sidebar {
+            grid-column: 1;
+            background-color: rgba(0, 0, 0, 0.3); 
+            backdrop-filter: blur(10px); /* Frosted glass effect */
+            border-radius: 17px; /* Rounded corners */
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Centers the content vertically */
+            box-shadow: 
+            0 0 5px rgba(130, 226, 255, 0.8), /* Light blue glow */
+            0 0 10px rgba(130, 226, 255, 0.8), /* Light blue glow */
+            0 0 15px rgba(104, 134, 254, 0.8), /* Blue with a hint of purple */
+            0 0 20px rgba(75, 0, 130, 0.8); /* Deep purple glow */
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center-align the buttons horizontally */
+            gap: 30px;
+            margin-top: 170px;
+        }
+        
+        .button-container button {
+            color: #82e2ff; 
+            background: transparent; 
+            font-size: 16px; 
+            border-radius: 5px; 
+            outline: none;
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s; 
+        }
+        
+        .button-container button:hover {
+            background-color: #82e2ff; /* Background color changes to light blue */
+            color: black; /* Icon color changes to black */
+            box-shadow: 0 0 8px #82e2ff, 0 0 16px #82e2ff; /* Glowing effect */
+        }
+        
+
+
+
+
+
+
+
+
+ 
+        .friend-sidebar {
+            background-color: rgba(0, 0, 0, 0.3); 
+            backdrop-filter: blur(10px); /* Frosted glass effect */
+            border-radius: 17px; /* Rounded corners */
+            grid-column: 2;
+            padding: 10px;
+            overflow: auto;
+            box-shadow: 
+            0 0 5px rgba(130, 226, 255, 0.8), /* Light blue glow */
+            0 0 10px rgba(130, 226, 255, 0.8), /* Light blue glow */
+            0 0 15px rgba(104, 134, 254, 0.8), /* Blue with a hint of purple */
+            0 0 20px rgba(75, 0, 130, 0.8); /* Deep purple glow */
+        }
+
+
+        
+        
+        .friend-sidebar {
+            background-color: rgba(0, 0, 0, 0.3); 
+            backdrop-filter: blur(10px);
+            border-radius: 17px;
+            grid-column: 2;
+            padding: 10px;
+            overflow: auto;
+            box-shadow: 
+                0 0 5px rgba(130, 226, 255, 0.8),
+                0 0 10px rgba(130, 226, 255, 0.8),
+                0 0 15px rgba(104, 134, 254, 0.8),
+                0 0 20px rgba(75, 0, 130, 0.8);
+        }
+        .friend-sidebar button {
+            margin-left: auto;
+            background-color: transparent;
+            color: #82e2ff;
+            padding: 4px;
+            font-size: 16px;
+            border-radius: 10px;
+            outline: none;
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        .friend-sidebar li {
+            display: flex;
+            align-items: center;
+            gap :20px
+
+        }
+        .friend-sidebar button:hover {
+            background-color: #82e2ff;
+            color: black;
+            box-shadow: 0 0 8px #82e2ff, 0 0 16px #82e2ff;
+        }
+        .friend-sidebar input {
+            border-radius: 5px;
+            width: 70%; 
+            background-color: transparent;
+            border: 2px solid #82e2ff;
+            color: #82e2ff;
+        }
+        .friend-sidebar input::placeholder {
+            color: #82e2ff;
+        }
+        .friend-sidebar .section {
+            display: block;
+        }
+        hr {
+            border: none;
+            height: 1px;
+            background-color: #82e2ff;
+            margin: 10px 0;
+        }
+        .friend-sidebar h3 {
+            font-family: "Kode Mono", monospace;
+            font-optical-sizing: auto;
+            font-weight: <weight>;
+            font-style: normal;
+            color: #82e2ff; /* Base color for the glow */
+            text-align: center;
+            text-shadow:
+                0 0 2.5px #104e8b,  /* Light blue glow */
+                0 0 5px #104e8b, /* Light blue glow */
+                0 0 7px #104e8b, /* Light blue glow */
+                0 0 10px #104e8b; /* Deep blue glow */
+        }
+        .friend-sidebar h1{
+            font-family: "Kode Mono", monospace;
+            font-weight: 400;
+            font-style: normal;
+            color: #82e2ff; /* Base color for the glow */
+            text-align: center;
+            text-shadow:
+                0 0 5px #104e8b,  /* Light blue glow */
+                0 0 7px #104e8b, /* Light blue glow */
+                0 0 9px #104e8b, /* Light blue glow */
+                0 0 15px #104e8b; /* Deep blue glow */
+        }
+        
+
+
+
+
+
+
+        main {
+            grid-column: 3;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            overflow-y: auto;
+            background-color: rgba(0, 0, 0, 0.3); 
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            box-shadow: 
+            0 0 5px rgba(130, 226, 255, 0.8), /* Light blue glow */
+            0 0 10px rgba(130, 226, 255, 0.8), /* Light blue glow */
+            0 0 15px rgba(104, 134, 254, 0.8), /* Blue with a hint of purple */
+            0 0 20px rgba(75, 0, 130, 0.8); /* Deep purple glow */
+        }
+        
+
+        #message_box {
+            background-color: rgba(255, 255, 255,0.8); 
+            height: 400px; /* Adjusted for responsiveness */
+            width: 95%; /* Full width within its container */
+            overflow: auto;
+            padding: 20px;
+            border-radius: 10px; /* Rounded corners */
+        }
+        
+
+        main input, main button {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease-in-out; /* Smooth transitions for hover effects */
+        }
+
+
+        main input {
+            background-color: transparent; 
+            border: 2px solid #82e2ff; 
+            color: #82e2ff; 
+        }
+        
+        main input::placeholder {
+            color: #82e2ff; 
+        }
+        main button {
+            background-color: transparent;
+            color: #82e2ff;
+            padding: 5px 10px;
+        }
+
+        main button:hover {
+            background-color: #82e2ff;
+            color: black;
+            box-shadow: 0 0 8px #82e2ff, 0 0 16px #82e2ff;
+        }
+        main h1{
+            font-family: "Kode Mono", monospace;
+            font-weight: 400;
+            font-style: normal;
+            color: #82e2ff; /* Base color for the glow */
+            text-align: center;
+            text-shadow:
+                0 0 5px #104e8b, 
+                0 0 7px #104e8b, 
+                0 0 9px #104e8b, 
+                0 0 20px #104e8b; 
+        }
+        main #online{
+            text-align: center;
+
+        }
+        .tooltip {
+            display: none;
+            width: 120px;
+            position: absolute;
+            border: 1px solid #ccc;
+            background-color: rgba(255, 255, 255, 0.9); /* 半透明背景 */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            color: black;
+            border-radius: 5px;
+            z-index: 1000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%); /* 居中 */
+        }
+
+
+
+
+    </style>
+<body>
+    <div class="fullscreen-image"></div>
+    <div class="content-container">
+        <aside class="chat-sidebar">
+
+                <div class="button-container">
+                    <button><i class="fa fa-comments"></i></button> <!-- Chat icon -->
+                    <button onclick = "forum()"><i class="fa fa-users"></i></button>     <!-- Forum icon -->
+                    <button onclick = "setting()"><i class="fa fa-cog"></i></button>       <!-- Settings icon -->
+                </div>
+        </aside> 
+        
+        
+
+        <div class="friend-sidebar">
+            <h1>Friends</h1>
+            
+            <div class="section">
+                {% if friends %}
+                    <ul>
+                        {% for friend in friends %}
+                            <li>
+                                <span class="friend" data-details="{{friend.detail}}">{{ friend.name }}</span>
+                                <div class="tooltip" id="tooltip"></div>
+                                {% if loop.index0 < friends_online_status|length %}
+                                    {% if friends_online_status[loop.index0] %}
+                                        <span>online</span>
+                                        <button onclick="delete_friend('{{ friend.name }}')"><i class="fas fa-times"></i></button>
+                                    {% else %}
+                                        <span>offline</span>
+                                        <button onclick="delete_friend('{{ friend.name }}')"><i class="fas fa-times"></i></button>
+                                    {% endif %}
+                                {% else %}
+                                    <span>offline</span>
+                                    <button onclick="delete_friend('{{ friend.name }}')"><i class="fas fa-times"></i></button>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No friends to show.</p>
+                {% endif %}
+            </div>
+            
+                
+            
+        
+            <div>
+                <p class="note">Here to add friends</p>
+                <input id="friend_name" placeholder="friend name..."/>
+                <button onclick="add_friend()"><i class="fas fa-plus-circle"></i></button>
+            </div>
+            <hr>
+        
+            <h3>Pending Requests</h3>
+            <p class="note">Here shows all the pending requests received</p>
+            <div class="section">
+                {% if requests %}
+                    <ul>
+                        {% for request in requests %}
+                            <li>
+                                <span>&DoubleRightArrow; {{ request }}</span>
+                                <button onclick="accept_friend('{{ request }}')"><i class="fas fa-check"></i></button>
+                                <button onclick="reject_friend('{{ request }}')"><i class="fas fa-times"></i></button>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No requests.</p>
+                {% endif %}
+            </div>
+            <hr>
+        
+            <h3>Sent Friend Requests</h3>
+            <p class="note">Here shows all the requests sent to others</p>
+            <div class="section">
+                {% if requests_to_sender %}
+                    <ul>
+                        {% for request in requests_to_sender %}
+                            <li>
+                                <span>&DoubleRightArrow; {{ request }}</span>
+                                <p>Request has been sent.</p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No requests have been sent.</p>
+                {% endif %}
+            </div>
+            <hr>
+        
+            <h3>Joined Groups</h3>
+            <p class="note">Here shows all the groups joint, click to open group chat</p>
+            <div class="section">
+                {% if joined_groups %}
+                    <ul>
+                        {% for group_dict in joined_groups %}
+                            {% for group, members in group_dict.items() %}
+                                <li>
+                                    <span>room {{ group }}: {{ members|join(', ') }}</span>
+                                    <button onclick="join_group({{ group_dict}})"><i class="fa fa-comments"></i></button>
+                                    <button onclick="leave_group({{ group_dict}})"><i class="fas fa-times"></i></button>
+                                </li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>You have not joined any groups.</p>
+                {% endif %}
+            </div>
+            <hr>
+        
+            <h3>Group Invitations</h3>
+            <p class="note">Here shows all the groups invitation received</p>
+            <div class="section">
+                {% if group_invitations %}
+                    <ul>
+                        {% for invitation in group_invitations %}
+                            {% for group, members in invitation.items() %}
+                            <li>
+                                <span>invite to {{ group }}: {{ members|join(', ') }}</span>
+                                <button onclick="accept_invitation({{ invitation }})"><i class="fas fa-check"></i></button>
+                                <button onclick="reject_invitation({{ invitation }})"><i class="fas fa-times"></i></button>
+                            </li>
+                            {% endfor %}
+                            
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No pending group invitations.</p>
+                {% endif %}
+            </div>
+        </div> 
+
+
+
+
+        <main>
+            <li>
+            <h1>Chat room for   {{ username }}  </h1>
+            <div id="online">
+                <p class="note">If you don't want your friends to see you are online, click "offline" below to enable the invisible mode</p>
+                <p class="note">Or if you want to pretend you are online even if you quit, click "online" below</p>
+                <button onclick="set_online()"> online </button>
+                <button onclick="set_offline()"> offline </i></button>
+                <p> you are currently online? --{{user_online_status}} </p>
+            </div>
+            </i>
+
+
+
+            <section id="message_box"></section>
+
+
+            <section id="chat_box">
+                <p class="text">Chat with:</p>
+                <p class="note">Input the user name here, then click "chat" to chat with him. Or click "Start Group Chat" to invite him into a group</p>
+                <input id="receiver" placeholder="username">
+                <button onclick="join_room()">Chat</button>
+                <button onclick="startGroupChat()">Start Group Chat</button>
+
+            </section>
+            <div id="friendListModal" style="display:none;">
+                {% if friends %}
+                    <form id="friendsForm">
+                        <ul>
+                        {% for friend in friends %}
+                            <li>
+                                <input type="checkbox" name="invitedFriends" value="{{ friend.name }}"> {{ friend.name }}
+                            </li>
+                        {% endfor %}
+                        </ul>
+                        <button type="button" onclick="submitInvitations()"><i class="fas fa-check"></i></button>
+                        <button type="button" onclick="hide_invitation()"><i class="fas fa-times"></i></button>
+                    
+                    </form>
+                {% else %}
+                    <p>No friends to show.</p>
+                {% endif %}
+            </div>
+
+            <section id="input_box" style="display: none">
+                <p class="text">Message:</p>
+                <input id="message" placeholder="message" style="display:inline-block; min-width: 400px">
+                <button onclick="send({{ban_status}})"><i class="fas fa-paper-plane"></i></button>
+                <button onclick="leave()"><i class="fas fa-sign-out-alt"></i></button>
+            </section>
+            <section id="input_box_group" style="display: none">
+                <p class="text">Message:</p>
+                <input id="message_group" placeholder="message" style="display:inline-block; min-width: 400px">
+                <button onclick="group_send({{ban_status}})">Send</button>
+                <button onclick="leave()">Leave Room</button>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
+
+
+    
+
+<script src="/static/js/libs/socket.io.min.js"></script>
+<script>
+    let token = Cookies.get('token');
+    let room_id = 0;
+    let receiver = '';
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltip = document.getElementById('tooltip');
+        var friends = document.querySelectorAll('.friend');
+
+        friends.forEach(function(friend) {
+            friend.addEventListener('mouseenter', function(event) {
+                tooltip.innerHTML = friend.getAttribute('data-details');
+                tooltip.style.display = 'block';
+                tooltip.style.left = event.pageX + 'px';
+                tooltip.style.top = event.pageY + 'px';
+            });
+
+            friend.addEventListener('mouseleave', function() {
+                tooltip.style.display = 'none';
+            });
+        });
+    });
+
+    // when the user presses the "Enter" key inside of the "message box", 
+    // the message is sent to the server
+    $("#message").on("keyup", (e) => {
+        if (e.key == "Enter") {
+            send(ban_status);
+        }
+    })
+    $("#message_group").on("keyup", (e) => {
+        if (e.key == "Enter") {
+            send(ban_status);
+        }
+    })
+
+    // when the user presses the enter key inside of the "receiver box"
+    // the user joins a (socket) room
+     $("#receiver").on("keyup", (e) => {
+        if (e.key == "Enter") {
+            join_room();
+        }
+    })
+
+
+    $(document).ready(() => {
+        // room_id is undefined if the user hasn't joined a room
+        // we early return in this case
+        if (Cookies.get("room_id") == undefined) {
+            return;
+        }
+
+        // the user has already joined an existing room
+        // we'll display the message box, instead of the "Chat with: " box
+        $("#chat_box").hide();
+        $("#input_box").show();
+        room_id = parseInt(Cookies.get("room_id"));
+        receiver = Cookies.get("receiver");
+    })
+
+    let username = "{{ username }}";
+
+    Cookies.set('username', username);
+
+    // initializes the socket
+    const socket = io();
+
+    socket.on("history", (user, msg, color, encrypted) => {
+        load_old_message(user, msg, color, encrypted);
+    });
+
+    // an incoming message arrives, we'll add the message to the message box
+    socket.on("incoming", (user, msg, color="black", encrypted, signature="") => {
+        add_message(user, msg, color, encrypted, signature);
+        if (user === 'system' && msg === `${username} has left the room.`){
+            clearMessage();
+        }
+        if (user === 'system' && msg === `${username} has left the room.`){
+            clearMessage();
+        }
+    });
+
+    socket.on("group_incoming", (user, message, color="black") => {
+        group_add_message(user, message, color);
+    });
+    
+    // we'll send the message to the server by emitting a "send" event
+    function send(ban_status) {
+        if (ban_status) {
+            alert("Sorry, you have been banned. Please contact admin.");
+            return;
+        }
+        ////console.log("send called"); //d
+        let message = $("#message").val();
+        $("#message").val("");
+        receiver = Cookies.get("receiver");
+        if (message !== ""){
+            //console.log("(In send) RequestPublickeyAndSend called: ", {room_id, username, message, receiver}) //d
+            {# requestPublicKeyAndSend(username, receiver, message, room_id); #}
+            //add_message(username, message, "black", false);
+            socket.emit("send", username, message, "", room_id, token);
+        }else {
+            //console.log("(In send) message is empty, abondon");
+        }
+    } 
+
+    function group_send(ban_status) {
+        ////console.log("send called"); //d
+        if (ban_status) {
+            alert("Sorry, you have been banned. Please contact admin.");
+            return;
+        }
+        let message = $("#message_group").val();
+        $("#message_group").val("");
+        group_id = Cookies.get("group_id");
+        console.log("(In group_send) group_send emitted with ", {username, message, group_id});
+        if (message !== ""){
+            //console.log("(In send) RequestPublickeyAndSend called: ", {room_id, username, message, receiver}) //d
+            socket.emit("group_send", username, message, group_id);
+        }else {
+            //console.log("(In send) message is empty, abondon");
+        }
+    } 
+
+    async function add_friend() {
+        let res = await axios.get("{{ url_for('add_friend') }}", {
+            params: {
+                friend_name: $("#friend_name").val(),
+            }
+        });
+        alert(res.data)
+    }
+
+    async function delete_friend(friendName){
+        let res = await axios.get("{{ url_for('delete_friend')}}",{
+            params: {
+                delete_friend_name:friendName,
+            }
+        });
+        alert(res.data)
+    }
+
+    async function accept_friend(friendName) {
+        let res = await axios.get("{{ url_for('accept_friend') }}", {
+            params: {
+                friend_name: friendName,
+            }
+        });
+        alert(res.data)
+    }
+    
+    async function reject_friend(friendName) {
+        let res = await axios.get("{{ url_for('reject_friend') }}", {
+            params: {
+                friend_name: friendName,
+            }
+        });
+        alert(res.data)
+    }
+
+    async function accept_invitation(invitation){
+        console.log("(In accept_invitation) The invitation post to server is", {invitation});
+        let res = await axios.post("{{ url_for('accept_invitation')}}", {
+            invitation: invitation
+        });
+    }
+
+    async function reject_invitation(invitation){
+        console.log("(In reject_invitation) The invitation post to server is", {invitation});
+        let res = await axios.post("{{ url_for('reject_invitation')}}", {
+            invitation: invitation
+        });
+    }
+    async function leave_group(group){
+        console.log("(In leave_group) The group post to server is", {group});
+        let res = await axios.post("{{ url_for('leave_group')}}", {
+            group: group
+        });
+    }
+
+    async function set_online() {
+        try {
+            let res = await axios.post("{{ url_for('set_online')}}");
+            alert(res.data.message);
+        } catch (error) {
+            alert('Error: ' + error.response.data.message);
+        }
+    }
+    
+    async function set_offline() {
+        try {
+            let res = await axios.post("{{ url_for('set_offline')}}");
+            alert(res.data.message);
+        } catch (error) {
+            alert('Error: ' + error.response.data.message);
+        }
+    }
+    
+
+
+
+    function startGroupChat() {
+        document.getElementById('friendListModal').style.display = 'block';
+    }
+
+    function hide_invitation(){
+        document.getElementById('friendListModal').style="display:none;";
+
+    }
+    
+    function submitInvitations() {
+        var selectedFriends = [];
+        $('input[name="invitedFriends"]:checked').each(function() {
+            selectedFriends.push(this.value);
+        });
+    
+        if (selectedFriends.length === 0) {
+            alert('Please select at least one friend to create a group.');
+            return;  
+        }
+    
+        fetch('/create_group', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({invitation_list: selectedFriends})
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+            return response.text(); 
+        })
+        .then(text => {
+            alert(text); 
+            if (text === "Group created!") {
+                document.getElementById('friendListModal').style.display = 'none'; // 如果创建成功，关闭模态框
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('Error: ' + error.message);
+        });
+    }
+    
+
+
+
+
+
+    // Attach these functions to the respective event handlers or buttons as needed.
+
+    async function setting() {
+        window.location.href = '/setting';
+    }
+    
+    async function forum(){
+        window.location.href = '/forum';
+    }
+    
+
+
+    
+    
+
+    // we emit a join room event to the server to join a room
+    function join_room() {
+        let receiver = $("#receiver").val();
+        Cookies.set("receiver", receiver);
+        //console.log("(In join_room) join emitted with ", receiver);
+        // pass in the receiver of our message to the server
+        // as well as the current user's username
+        socket.emit("join", username, receiver, token, (res) => {
+            // res is a string with the error message if the error occurs
+            // this is a pretty bad way of doing error handling, but watevs
+            if (typeof res != "number") {
+                Cookies.remove("receiver");
+                alert(res);
+                return;
+            }
+
+            // set the room id variable to the room id returned by the server
+            room_id = res;
+            
+            Cookies.set("room_id", room_id);
+            //console.log("(In join_room) the server returns ", room_id)
+
+            // now we'll show the input box, so the user can input their message
+            $("#chat_box").hide();
+            $("#input_box_group").hide();
+            $("#input_box").show();
+        });
+     
+    }
+
+
+    function join_group(group) {
+        console.log("join_group", "join_group called");
+        let group_id = Object.keys(group)[0];
+        let members = group[group_id];
+
+        group_id = parseInt(group_id, 10)+10000;
+        Cookies.set("group_id", group_id);
+        console.log("(In join_group) join emitted with group_id and members: ", {group_id, members});
+    
+        socket.emit("join_group", username, group_id, (res) => {
+            if (typeof res != "number") {
+                alert("Error joining room for member: " + member + " - " + res);
+                return;
+            }
+
+            let room_id = res;
+            console.log("(In join_group) the server returns room_id: ", room_id);
+        });
+ 
+        $("#chat_box").hide();
+        $("#input_box").hide();
+        $("#input_box_group").show();
+    }
+    
+
+    // function when the user clicks on "Leave Room"
+    // emits a "leave" event, telling the server that we want to leave the room
+    function leave() {
+        console.log("(In leave) leave called");
+        Cookies.remove("room_id");
+        //Cookies.remove("receiver");
+        socket.emit("leave", username, room_id, token);
+        $("#input_box").hide();
+        $("#input_box_group").hide();
+        $("#chat_box").show();
+        clearMessage();
+    }
+    
+    function clearMessage(){
+        //console.log("(In clearMessage) message cleared");
+        $("#message_box").empty(); 
+    }
+
+    // function to add a message to the message box
+    // called when an incoming message has reached a client
+    function add_message(user, message, color, encrypted, signature="") {
+        //console.log("(In add_message) Received: ", {user, message, color, encrypted, signature}); //d
+        const text = `${user}: ${message}`;
+        let box = $("#message_box");
+        let child = $(`<p style="color:${color}; margin: 0px;"></p>`).text(text);
+        box.append(child);
+        if (user !== "system"){
+            requestOwnPublickeyAndSave(user, message, color);
+        }
+        {# if (encrypted === false) {
+            const text = `${user}: ${message}`;
+            let box = $("#message_box");
+            let child = $(`<p style="color:${color}; margin: 0px;"></p>`).text(text);
+            box.append(child);
+            if (user !== "system"){
+                requestOwnPublickeyAndSave(user, message, color);
+            }
+        } else if (encrypted === true){
+            if (user === username){
+                ;
+            } else if (user !== username){
+                getPrivateKey(username)
+                .then(priKeyBase64 => {
+                    //console.log("(In add message) private key get, use it to decrypt message: ", {priKeyBase64});
+                    return decryptMessage(message, priKeyBase64);
+                })
+                .then(decryptedMessage => {
+                    // check signature for integrity
+                    return requestPublicKey_and_check_signature(decryptedMessage, signature, user)
+                    .then(isValidSignature => {
+                        let text;
+                        let msgColor = "black";
+                        if (isValidSignature) {
+                            text = `${user}: ${decryptedMessage}`;
+                            sendMessageForSave(user, message, color);
+                        } else {
+                            text = 'Message has been modified, please contact the admin immediately!';
+                            msgColor = "red";
+                        }
+                        let box = $("#message_box");
+                        let child = $(`<p style="color:${msgColor}; margin: 0px;"></p>`).text(text);
+                        box.append(child);
+                    });
+                })
+                .catch(error => {
+                    text = 'Message has been modified, please contact the admin immediately!';
+                    msgColor = "red";
+                    let box = $("#message_box");
+                    let child = $(`<p style="color:${msgColor}; margin: 0px;"></p>`).text(text);
+                    box.append(child);
+
+                    alert(text);
+                });
+            }
+        } #}
+    }
+
+    function group_add_message(user, message, color){
+        console.log("(In group_add_message) Received: ", {user, message, color});
+        const text = `${user}: ${message}`;
+        let box = $("#message_box");
+        let child = $(`<p style="color:${color}; margin: 0px;"></p>`).text(text);
+        box.append(child);
+    }
+
+    function requestPublicKeyAndSend(username, receiver, message, room_id) {
+        //console.log("(In requestPublicKeyAndSend) get_public_key emitted with ", receiver)
+        socket.emit('get_public_key_for_send', receiver, username, token);
+
+        socket.once('public_key_response_for_send', function(data) {
+            //console.log("(In requestPublicKeyAndSend) Public key response received:", data); //d
+
+            if (data.error) {
+                console.error("Error getting public key:", data.error);
+                return;
+            }
+
+            encryptAndSend(username, message, data.public_key, room_id);
+        });
+    }
+
+    async function encryptAndSend(username, message, publicKeyStr, room_id) {
+        try {
+            let priKeyBase64 = await getPrivateKey(username);
+            let sig = await produce_signature(message, priKeyBase64);
+
+            const publicKey = await window.crypto.subtle.importKey(
+                "spki",
+                str2ab(publicKeyStr),
+                {
+                    name: "RSA-OAEP",
+                    hash: {name: "SHA-256"},
+                },
+                true,
+                ["encrypt"]
+            );
+
+            const encrypted = await window.crypto.subtle.encrypt(
+                {
+                    name: "RSA-OAEP",
+                },
+                publicKey,
+                new TextEncoder().encode(message)
+            );
+
+            const encryptedMessage = arrayBufferToBase64(encrypted);
+            socket.emit("send", username, encryptedMessage, sig, room_id, token);
+        } catch (error) {
+            console.error("Error during encryption or sending:", error);
+        }
+    }
+
+    // Base64 to ArrayBuffer
+    function str2ab(str) {
+        try {
+            var pemHeader = "-----BEGIN PUBLIC KEY-----";
+            var pemFooter = "-----END PUBLIC KEY-----";
+            str = str.replace(pemHeader, '').replace(pemFooter, '').replace(/(\r\n|\n|\r)/gm, "");
+
+            var binaryString = window.atob(str);
+            var len = binaryString.length;
+            var bytes = new Uint8Array(len);
+            for (var i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        } catch (error) {
+            console.error("Error converting Base64 to ArrayBuffer:", error);
+            throw error;
+        }
+    }
+
+    // ArrayBuffer to Base64
+    function arrayBufferToBase64(buffer) {
+        let binary = '';
+        let bytes = new Uint8Array(buffer);
+        let len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return window.btoa(binary);
+    }
+    
+    async function decryptMessage(encryptedMessage, privateKeyBase64) {
+        const privateKeyBuffer = str2ab(privateKeyBase64);
+
+        const privateKey = await window.crypto.subtle.importKey(
+            "pkcs8",
+            privateKeyBuffer,
+            {
+                name: "RSA-OAEP",
+                hash: {name: "SHA-256"},
+            },
+            false,
+            ["decrypt"]
+        );
+
+        const encryptedMessageBuffer = str2ab(encryptedMessage);
+
+        const decryptedMessageBuffer = await window.crypto.subtle.decrypt(
+            {
+                name: "RSA-OAEP",
+            },
+            privateKey,
+            encryptedMessageBuffer
+        );
+
+        const decryptedMessage = new TextDecoder().decode(decryptedMessageBuffer);
+
+        return decryptedMessage;
+    }
+
+    async function produce_signature(message, privateKeyBase64) {
+        try {
+            const privateKeyBuffer = str2ab(privateKeyBase64);
+
+            const privateKey = await window.crypto.subtle.importKey(
+                "pkcs8",
+                privateKeyBuffer,
+                {
+                    name: "RSA-PSS",
+                    hash: "SHA-256",
+                },
+                false,
+                ["sign"]
+            );
+
+            const encoder = new TextEncoder();
+            const messageBuffer = encoder.encode(message);
+
+            const signature = await window.crypto.subtle.sign(
+                {
+                    name: "RSA-PSS",
+                    saltLength: 32, // the length of the salt
+                },
+                privateKey,
+                messageBuffer
+            );
+
+            return arrayBufferToBase64(signature);
+        } catch (error) {
+            console.error("Error generating signature:", error);
+            throw error;
+        }
+    }
+
+    function requestPublicKey_and_check_signature(message, signatureBase64, sender) {
+        return new Promise((resolve, reject) => {
+            //console.log("(In requestPublicKey_and_check_signature) get_public_key emitted with ", {sender});
+            socket.emit('get_public_key_for_check', sender, username, token);
+            socket.once('public_key_response_for_check', async function(data) {
+                if (data.error) {
+                    console.error("Error getting public key:", data.error);
+                    reject("Error getting public key");
+                    return;
+                }
+
+                try {
+                    //console.log("(In requestPublicKey_and_check_signature) public key get, decrypt and comparing: ", {message, signatureBase64, publicKey:data.public_key});
+
+                    const publicKeyBuffer = str2ab(data.public_key);
+                    const publicKey = await window.crypto.subtle.importKey(
+                        "spki",
+                        publicKeyBuffer,
+                        {
+                            name: "RSA-PSS",
+                            hash: "SHA-256",
+                        },
+                        false,
+                        ["verify"]
+                    );
+                    const signatureBuffer = str2ab(signatureBase64);
+                    const encoder = new TextEncoder();
+                    const messageBuffer = encoder.encode(message);
+
+                    const isValid = await window.crypto.subtle.verify(
+                        {
+                            name: "RSA-PSS",
+                            saltLength: 32,
+                        },
+                        publicKey,
+                        signatureBuffer,
+                        messageBuffer
+                    );
+
+                    //console.log("(In requestPublicKey_and_check_signature) the comparing result is ",{isValid});
+                    resolve(isValid);
+                } catch (error) {
+                    console.error("Error verifying signature:", error);
+                    reject(error);
+                }
+            });
+        });
+    }
+
+    function getPrivateKey(user) {
+        return new Promise((resolve, reject) => {
+            if (Cookies.get("privateKey")) {
+                let privateKey = Cookies.get("privateKey");
+                //console.log("(getPrivateKey) get private key from cookie: ",{user, privateKey});
+                resolve(privateKey);
+            } else {
+                socket.emit('get_private_key', user, username, token);
+
+                socket.once('private_key_response', function(data) {
+                    //console.log("(getPrivateKey) Private key response received:", {user, privateKey:data.private_key});
+
+                    if (data.error) {
+                        console.error("Error getting private key:", data.error);
+                        reject(data.error);
+                        return;
+                    }
+
+                    let password = Cookies.get("password");
+                    ////console.log("(in get private key) get password: ", password);
+
+                    decryptPrivateKey(data.private_key, password, user).then(privateKey => {
+                        ////console.log("get private key: ", privateKey);
+                        //Cookies.set("privateKey", privateKey);
+                        resolve(privateKey);
+                    }).catch(error => {
+                        console.error("get private key failed:", error);
+                        reject(error);
+                    });
+                });
+            }
+        });
+    }
+
+    async function decryptPrivateKey(encryptedPrivateKeyBase64, password, username) {
+        try{
+            ////console.log("(decryptPrivateKey) Starting decryption process"); //d
+
+            const encryptedPrivateKey = Uint8Array.from(atob(encryptedPrivateKeyBase64), c => c.charCodeAt(0));
+            ////console.log("(decryptPrivateKey) Encrypted private key as Uint8Array:", encryptedPrivateKey); //d
+
+            const keyMaterial = await crypto.subtle.importKey(
+                "raw",
+                new TextEncoder().encode(password),
+                { name: "PBKDF2" },
+                false,
+                ["deriveKey"]
+            );
+
+            const key = await crypto.subtle.deriveKey(
+                {
+                    name: "PBKDF2",
+                    salt: new TextEncoder().encode(username),
+                    iterations: 100000,
+                    hash: "SHA-256"
+                },
+                keyMaterial,
+                { name: "AES-GCM", length: 256 },
+                true,
+                ["encrypt", "decrypt"]
+            );
+            ////console.log("(decryptPrivateKey) Derived key:", key);
+
+            const iv = new Uint8Array(12);
+            ////console.log("(decryptPrivateKey) IV: ", iv);
+
+            const decryptedPrivateKey = await crypto.subtle.decrypt(
+                {
+                    name: "AES-GCM",
+                    iv: iv,
+                },
+                key,
+                encryptedPrivateKey
+            );
+            ////console.log("Decryption complete");
+
+            const privateKey = new TextDecoder().decode(new Uint8Array(decryptedPrivateKey));
+            ////console.log("(decryptPrivateKey) Decrypted private key:", privateKey); //d
+
+            return privateKey;
+        } catch (error) {
+            console.error("Decryption failed:", error);
+        }   
+    }
+
+    function sendMessageForSave(sender, message, color){
+        receiver = Cookies.get("receiver");
+        //console.log("(In sendMessageForSave) save_message emitted: ", {message, username, receiver, sender, color});
+        socket.emit('save_message', message, username, receiver, sender, color, token);
+    }
+
+    function requestOwnPublickeyAndSave(sender, message, color){
+        if (Cookies.get("publickey")){
+            pubKey = Cookies.get("publickey");
+            //console.log("(In requestOwnPublickeyAndEncrypt) Get public key from cookie: ", pubKey)
+            encryptAndSave(sender, message, color, pubKey);
+        } else {
+            socket.emit('get_public_key_for_save', username, token);
+
+            socket.once('public_key_response_for_save', function(data) {
+                //console.log("(In requestOwnPublickeyAndEncryptForSave) Public key response received:", data); //d
+
+                if (data.error) {
+                    console.error("Error getting public key:", data.error);
+                    return;
+                }
+
+                //Cookies.set("publicKey", data.public_key)
+                encryptAndSave(sender, message, color, data.public_key);
+            });
+        }
+    }
+
+    async function encryptAndSave(sender, message, color, publicKeyStr){
+        try {
+            const publicKey = await window.crypto.subtle.importKey(
+                "spki",
+                str2ab(publicKeyStr),
+                {
+                    name: "RSA-OAEP",
+                    hash: {name: "SHA-256"},
+                },
+                true,
+                ["encrypt"]
+            );
+
+            const encrypted = await window.crypto.subtle.encrypt(
+                {
+                    name: "RSA-OAEP",
+                },
+                publicKey,
+                new TextEncoder().encode(message)
+            );
+
+            const encryptedMessage = arrayBufferToBase64(encrypted);
+            sendMessageForSave(sender, encryptedMessage, color);
+        } catch (error) {
+            console.error("Error during encryption or sending:", error);
+        }
+    }
+
+    function load_old_message(user, message, color, encrypted) {
+        console.log("(In load_old_message) Received: ", {user, message, color, encrypted}); //d
+        getPrivateKey(username)
+        .then(priKeyBase64 => {
+            //console.log("(In load_old_message) private key get, use it to decrypt message: ", {priKeyBase64});
+            return decryptMessage(message, priKeyBase64);
+        })
+        .then(decryptedMessage => {
+            let text;
+            let msgColor = color;
+            text = `${user}: ${decryptedMessage}`;
+            let box = $("#message_box");
+            let child = $(`<p style="color:${msgColor}; margin: 0px;"></p>`).text(text);
+            box.append(child);
+        });
+    }
+
+    // "Enter" detector
+    document.getElementById("friend_name").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            add_friend();
+        }
+    });
+
+    document.getElementById("message_group").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            group_send();
+        }
+    });
+
+</script>
+{% endblock %}

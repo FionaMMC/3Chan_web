@@ -1,0 +1,26 @@
+[
+    {
+        "post_id": 0,
+        "sender": "1",
+        "title": "123",
+        "content": null,
+        "time": "2024-05-14T22:03:55",
+        "comments": []
+    },
+    {
+        "post_id": 1,
+        "sender": "1",
+        "title": "",
+        "content": "",
+        "time": "2024-05-17T18:00:39",
+        "comments": []
+    },
+    {
+        "post_id": 2,
+        "sender": "1",
+        "title": "",
+        "content": "",
+        "time": "2024-05-17T18:00:47",
+        "comments": []
+    }
+]

@@ -1,0 +1,198 @@
+<!-- 
+    Sign up page, pretty much the same as login.
+    -->
+    {% extends 'base.jinja' %}
+    
+    
+    {% block content %} 
+<html lang="en">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
+    <title>Sign Up</title>
+    <style>
+        body {
+            background-color: black; 
+            display: flex;
+            flex-direction: column; 
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Montserrat', sans-serif; 
+            color: white;
+        }
+        #loginForm {
+            background: rgba(255, 255, 255, 0.3); 
+            padding: 20px 70px; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(25px);
+            text-align: center;
+            margin-right:370px;
+            margin-top:200px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, button {
+            width: 100%; 
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+        }
+        button {
+            background-color: #1e81b0;
+            color: white;
+            font-size: 16px;
+        }
+        #spline-container {
+            align-self: flex-end; 
+            width: 70%; 
+            height: 70vh; 
+            margin-top: -430px;
+            margin-right: -30px;
+            z-index: -2;
+        }
+        #particles {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            margin-right: -30px;
+            z-index: -3; 
+          }
+        
+    </style>
+    <div id="loginForm">
+        <h1>Sign up</h1>
+        <label for="username">Username</label>
+        <input id="username" type="text" placeholder="Username">
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Password">
+        <button onclick="signup()">Sign up</button>
+    </div>
+    <div id="spline-container">
+        <script type="module" src="https://unpkg.com/@splinetool/viewer@1.2.5/build/spline-viewer.js"></script>
+        <spline-viewer loading-anim-type="spinner-small-light" url="https://prod.spline.design/iKq0LVJ0OEgcqScY/scene.splinecode"></spline-viewer>
+    </div>
+    <div id = "particles">
+        <script type="module" src="https://unpkg.com/@splinetool/viewer@1.2.5/build/spline-viewer.js"></script>
+        <spline-viewer url="https://prod.spline.design/qKlslVsAsCakfQFh/scene.splinecode"></spline-viewer>
+    </div>
+
+
+    <script src="/static/js/libs/socket.io.min.js"></script>
+    <script>
+
+             function isValidURL(string) {
+                if (string.length == 0) {
+                    return false;
+                }
+                if (string[0] == "/") {
+                    return true;
+                }
+                return false;
+            }
+
+            // this function is identical to login(), see login.jinja
+            async function signup() { 
+                console.log("(In signup) signup start");
+                let keyPair = null;
+                try{
+                    keyPair = await window.crypto.subtle.generateKey( 
+                        { 
+                            name: "RSA-OAEP", 
+                            modulusLength: 2048, 
+                            publicExponent: new Uint8Array([0x01, 0x00, 0x01]), 
+                            hash: {name: "SHA-256"}, 
+                        }, 
+                        true, 
+                        ["encrypt", "decrypt"] 
+                    ); 
+                    console.log("(In signup) keypair generated");
+                } catch (error){
+                    console.log("(In signup) Some error occurs when generating key pair")
+                    console.log(error)
+                }
+
+                let exportedPublicKey = await window.crypto.subtle.exportKey("spki", keyPair.publicKey); 
+                let publicKeyBase64 = btoa(String.fromCharCode.apply(null, new Uint8Array(exportedPublicKey))); 
+                let exportedPrivateKey = await window.crypto.subtle.exportKey("pkcs8", keyPair.privateKey); 
+                let privateKeyBase64 = btoa(String.fromCharCode.apply(null, new Uint8Array(exportedPrivateKey))); 
+
+                let username = $("#username").val(); 
+                let password = $("#password").val(); 
+
+                let encryptedPrivateKey = await encryptPrivateKey(privateKeyBase64, password, username); 
+                let encryptedPrivateKeyBase64 = btoa(String.fromCharCode.apply(null, new Uint8Array(encryptedPrivateKey))); 
+
+                let {password: hashedPassword, salt} = generateHashedPassword(password) 
+                console.log("(In signup) The hashed password and the salt is ", {hashedPassword, salt}) 
+
+                Cookies.set("privateKey", privateKeyBase64); 
+                Cookies.set("publicKey", publicKeyBase64); 
+                Cookies.set("password", password); 
+                Cookies.set("salt", salt); 
+
+                let loginURL = "{{ url_for('signup_user') }}"; 
+                let res = await axios.post(loginURL, { 
+                    username: username, 
+                    password: hashedPassword, 
+                    publicKey: publicKeyBase64, 
+                    privateKey: encryptedPrivateKeyBase64, 
+                    salt: salt 
+                }); 
+                if (!isValidURL(res.data)) { 
+                    alert(res.data); 
+                    return; 
+                } 
+                window.open(res.data, "_self") 
+            } 
+
+            async function encryptPrivateKey(privateKey, password, username) {
+                const keyMaterial = await crypto.subtle.importKey(
+                    "raw",
+                    new TextEncoder().encode(password),
+                    {name: "PBKDF2"},
+                    false,
+                    ["deriveKey"]
+                );
+
+                const key = await crypto.subtle.deriveKey(
+                    {
+                        "name": "PBKDF2",
+                        salt: new TextEncoder().encode(username),
+                        "iterations": 100000,
+                        "hash": "SHA-256"
+                    },
+                    keyMaterial,
+                    { "name": "AES-GCM", "length": 256},
+                    true,
+                    [ "encrypt", "decrypt" ]
+                );
+
+                const iv = new Uint8Array(12);
+                const encryptedPrivateKey = await crypto.subtle.encrypt(
+                    {
+                        name: "AES-GCM",
+                        iv: iv,
+                    },
+                    key,
+                    new TextEncoder().encode(privateKey)
+                );
+
+                return encryptedPrivateKey;
+            }
+
+            function generateHashedPassword(password) { 
+                const salt = Math.random().toString(36).slice(2);  //generate random salt 
+                const hashedPassword = CryptoJS.SHA256(password + salt).toString(CryptoJS.enc.Hex); 
+                return { password: hashedPassword, salt: salt }; 
+            } 
+        </script>
+    {% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.jinja' %}
+
+{% block content %} 
+<h1>site-map</h1>
+
+<h2>User Service</h2>
+<p><a>Welcome Page</a></p>
+<p><a>My profile</a></p>
+<p><a>Setting</a></p>
+<p><a>Admin Support</a></p>
+<p><a>Useful Link</a></p>
+
+<h2>Chatting</h2>
+<p><a>Friend List</a></p>
+<p><a>Friend Request</a></p>
+<p><a>Room Chat</a></p>
+<p><a>Study Group</a></p>
+
+<h2>Forum</h2>
+<p><a>Knowledge Search</a></p>
+<p><a>Software Engineering Knowledge Repo</a></p>
+<p><a>Computer Science Knowledge Repo</a></p>
+<p><a>Data Analysis Knowledge Repo</a></p>
+<p><a>CyberSecurity Knowledge Repo</a></p>
+<p><a>Electrical Engineering Knowledge Repo</a></p>
+<p><a>Game Development Knowledge Repo</a></p>
+
+<h2>User management</h2>
+<p><a href={{ url_for('signup') }}> Sign Up</a></p>
+<p><a href={{ url_for('login') }}> Login</a></p>
+<p><a>Password Management</a></p>
+
+{% endblock %}
